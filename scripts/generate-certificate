@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Colors
+MAGENTA="\033[1;35m"
+RESET="\033[0m"
+
+# Configuration
+CHALLENGE="dns"
+LETSENCRYPT_SERVER="https://acme-v02.api.letsencrypt.org/directory"
+DEFAULT_ARGUMENTS="--agree-tos --preferred-challenges ${CHALLENGE} --server ${LETSENCRYPT_SERVER}"
+
+# Server variables.
+DOMAIN="$1"
+EMAIL="$2"
+
+# Print the usage.
+function print_usage() {
+   printf "${MAGENTA}[usage]${RESET}\tgenerate-certificate DOMAIN EMAIL\n"
+}
+
+# Create the custom arguments
+function create_arguments() {
+   local domain="$1"
+   local email="$2"
+   echo "-d *.${domain} -d ${domain} --email ${email}"
+}
+
+# Create the commands.
+function create_command() {
+   local server_arguments=$(create_arguments "$1" "$2")
+   echo -ne "certbot certonly ${DEFAULT_ARGUMENTS} ${server_arguments} --manual"
+}
+
+if [[ "$#" -ne 2 ]]; then 
+   print_usage
+   exit 1
+fi
+
+# OUTDIR = /etc/letsencrypt/live/$DOMAIN
+cmd=$(create_command "$DOMAIN" "$EMAIL")
+bash -c "$cmd"

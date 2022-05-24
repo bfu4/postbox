@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function generate_sed() {
+  local regex="$1"
+  local replace="$2"
+  echo -e "'s/$regex/$replace/g'"
+}
+
+function generate_opendkim_configs() {
+   bash -c "sed -s $(generate_sed DOMAIN ${DOMAIN}) /templates/opendkim/TrustedHosts > /data/milter/opendkim/TrustedHosts" 
+   bash -c "sed -s -i $(generate_sed ADDRESS ${ADDRESS}) /data/milter/opendkim/TrustedHosts"
+   bash -c "sed -s $(generate_sed DOMAIN ${DOMAIN}) /templates/opendkim/SigningTable > /data/milter/opendkim/SigningTable"
+   bash -c "sed -s $(generate_sed DOMAIN ${DOMAIN}) /templates/opendkim/KeyTable > /data/milter/opendkim/KeyTable"
+}
+
+DOMAIN="$1"
+ADDRESS="$2"
+
+generate_opendkim_configs "${DOMAIN}" "${ADDRESS}"

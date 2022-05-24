@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Formatting variables.
+RED="\033[1;31m"
+RESET="\033[0m"
+MAGENTA="\033[1;35m"
+
+# Known versions. Here we're creating a google SPF record.
+VERSION="spf1"
+INCLUDE="_spf.google.com"
+
+# The server's domain and IP.
+DOMAIN="$1"
+MAIL_DOMAIN="$2"
+IP="$3"
+
+function print_usage() {
+  printf "${MAGENTA}[usage]${RESET}\tgenerate-spf DOMAIN MAIL_DOMAIN HOST_IP\n"
+}
+
+# Print an error if it occurs.
+function print_err() {
+  printf "${RED}[error]${RESET}\t$@\n"
+}
+
+# Print the SPF record very pretty.
+function print_pretty() {
+   printf "${MAGENTA}+-------\tSPF RECORD\t-------+\n"
+   printf "${RED}TXT${RESET} @ ${RED}${DOMAIN}${RESET}: \"$@\"\n"
+   printf "${MAGENTA}+-------\t----------\t-------+${RESET}\n"
+}
+
+# Generate the SPF record.
+function generate_spf() {
+   local version="$2"
+   local domain="$3"
+   local mail_domain="$4"
+   local ip="$5"
+   # We like the idea of the mail server being mail.domain.tld.
+   echo -ne "v=${version} include:${INCLUDE} a:${domain} mx:mail.${mail_domain} ip4:${ip} ~all"
+}
+
+# Check the program arguments. If there are not enough, or too many arguments, exit.
+if [[ "$#" -ne 4 ]]; then
+   print_err "not enough arguments! got $#, expected 4"
+   print_usage
+   exit 1
+fi
+
+# Store our record.
+# Here we assume that our 
+spf=$(generate_spf "$VERSION" "$DOMAIN" "$MAIL_DOMAIN" "$IP")
+
+# Print the SPF record.
+print_pretty "$spf"

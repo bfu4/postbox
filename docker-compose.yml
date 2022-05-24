@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+   milter:
+      build:
+         dockerfile: .docker/milter.dockerfile
+         context: .
+      ports:
+         - "8892:8892"
+      volumes:
+         - ./config/milter/opendkim:/etc/opendkim
+         - ./data/milter/opendkim/keys:/etc/dkimkeys
+   mail:
+      build:
+         dockerfile: .docker/mail.dockerfile
+         context: .
+      ports:
+         - "25:25"
+         - "465:465"
+         - "587:587"
+         - "993:993"
+      volumes:
+         - ./scripts:/scripts
+   management:
+      build:
+         dockerfile: .docker/build.dockerfile
+         context: .
+      volumes:
+         - ./templates:/templates
+         - ./data:/data
