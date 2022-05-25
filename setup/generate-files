@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Run generation commands from management container.
+DOMAIN="$1"
+ADDRESS="$2"
+
+CONTAINER="management"
+RED="\033[1;31m"
+RESET="\033[0m"
+
+function print_err() {
+   local content="$@"
+   printf "${RED}[error]\t${RESET}${content}\n"
+}
+
+function generate_mgmt_configs() {
+   local command="/bin/generate-configs"
+   docker-compose run ${CONTAINER} bash -c "${command} ${DOMAIN} ${ADDRESS}"
+}
+
+if [[ "$#" -ne 2 ]]; then
+   print_err "expected 2 arguments, recieved $#"
+   exit 1
+fi
+
+generate_mgmt_configs
