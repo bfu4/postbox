@@ -8,8 +8,8 @@ services:
       ports:
          - "8892:8892"
       volumes:
-         - ./config/milter/opendkim:/etc/opendkim
-         - ./data/milter/opendkim/keys:/etc/dkimkeys
+         - ./data/milter/opendkim:/etc/opendkim
+         - ./data/keys/opendkim:/etc/dkimkeys
    mail:
       build:
          dockerfile: .docker/mail.dockerfile
